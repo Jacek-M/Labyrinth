@@ -1,5 +1,5 @@
 package Map;
 
 public enum TileStatus {
-    PATH, WALL
+    PATH, WALL, EXIT, START
 }

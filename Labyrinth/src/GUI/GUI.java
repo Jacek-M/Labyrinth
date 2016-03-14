@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -14,7 +15,6 @@ public class GUI extends JFrame {
     private JPanel panel;
     private JButton[] buttons;
     private LabyrinthGUI labiLabyrinthGUI;
-    
 
     public GUI() {
         panel = new JPanel();
@@ -56,11 +56,18 @@ public class GUI extends JFrame {
         this.buttons[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.LOAD_MAZE);
-                labiLabyrinthGUI.setVisible(true);
-                GUI.this.dispose();
-            }
-        });
+                FileDialog fd = new FileDialog(GUI.this, "Wczytaj", FileDialog.LOAD);
+                fd.setVisible(true);
+                String dir = fd.getDirectory();
+                String file = fd.getFile();
+            
+//                labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.LOAD_MAZE);
+//                labiLabyrinthGUI.setVisible(true);
+//                GUI.this.dispose();
+        }
+    }
+
+);
 
     }
 }
