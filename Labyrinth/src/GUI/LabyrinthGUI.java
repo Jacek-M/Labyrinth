@@ -89,7 +89,7 @@ public class LabyrinthGUI extends JFrame implements MouseListener, MouseMotionLi
     }
 
     public void ownMaze() {
-
+        int a = 2; /* test upa na gita */
     }
 
     public void loadMaze() {
