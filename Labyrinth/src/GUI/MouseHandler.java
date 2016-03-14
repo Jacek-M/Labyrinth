@@ -67,13 +67,13 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
     }
 
     private void setWall(MouseEvent me) {
-        int tilex = (int) (me.getX() / LabyrinthGUI.TILE_SIZE);
-        int tiley = (int) (me.getY() / LabyrinthGUI.TILE_SIZE);
-        if (tilex < LabyrinthGUI.MAZE_SIZE && tilex >= 0 && tiley-1 < LabyrinthGUI.MAZE_SIZE && tiley-1 >= 0) {
+        int tilex = (int) ((me.getX()) / LabyrinthGUI.TILE_SIZE);
+        int tiley = (int) ((me.getY()) / LabyrinthGUI.TILE_SIZE);
+        if (tilex < LabyrinthGUI.MAZE_SIZE && tilex >= 0 && tiley < LabyrinthGUI.MAZE_SIZE && tiley >= 0) {
             if(this.eraseMode == true)
-                this.tiles[tilex][tiley-1].setTileStatus(TileStatus.PATH);
+                this.tiles[tilex][tiley].setTileStatus(TileStatus.PATH);
             else
-                this.tiles[tilex][tiley-1].setTileStatus(TileStatus.WALL);
+                this.tiles[tilex][tiley].setTileStatus(TileStatus.WALL);
         }
     }
 

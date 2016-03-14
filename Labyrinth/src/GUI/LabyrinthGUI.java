@@ -18,8 +18,7 @@ public class LabyrinthGUI extends JFrame {
     public static final int WIDTH = 400;
     public static final int HEIGHT = 500;
 
-    public static final int TILE_SIZE = 20;
-
+    public static final int TILE_SIZE = 5;
     public static final int MAZE_SIZE = WIDTH / TILE_SIZE;
 
     private JPanel panel;
@@ -54,9 +53,8 @@ public class LabyrinthGUI extends JFrame {
 
         createMaze(400, 400);
         
-
-        this.addMouseListener(this.mouse);
-        this.addMouseMotionListener(this.mouse);
+        this.drawPanel.addMouseMotionListener(this.mouse);
+        this.drawPanel.addMouseListener(this.mouse);
         
         
         ActionListener timerAction = new ActionListener() {
