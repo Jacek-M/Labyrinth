@@ -1,10 +1,9 @@
 package GUI;
 
-import Map.Tile;
-import Map.TileStatus;
+import Map.Maze;
 import java.awt.BorderLayout;
+import java.awt.FileDialog;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -24,16 +23,28 @@ public class LabyrinthGUI extends JFrame {
     private JPanel panel;
     private DrawablePanel drawPanel;
     private JButton[] buttons;
-    private Tile[][] tiles;
+    private Maze maze;
     private MouseHandler mouse;
 
     public LabyrinthGUI(ActionStatus action) {
-        tiles = new Tile[MAZE_SIZE][MAZE_SIZE];
+        if (action.equals(ActionStatus.DRAW_MAZE)) {
+            maze = new Maze(MAZE_SIZE);
+
+        } else if (action.equals(ActionStatus.GENERATE_MAZE)) {
+            maze = new Maze(MAZE_SIZE);
+
+        } else if (action.equals(ActionStatus.LOAD_MAZE)) {
+            FileDialog fd = new FileDialog(this, "Wczytaj", FileDialog.LOAD);
+            fd.setVisible(true);
+            String dir = fd.getDirectory() + fd.getFile();
+            maze = new Maze();
+            maze.loadMazeFromFile(dir);
+        }
 
         this.panel = new JPanel();
-        this.drawPanel = new DrawablePanel(400, 400, tiles);
+        this.drawPanel = new DrawablePanel(WIDTH, WIDTH, maze.getTiles());
         this.buttons = new JButton[2];
-        this.mouse = new MouseHandler(tiles);
+        this.mouse = new MouseHandler(maze.getTiles());
 
         this.buttons[0] = new JButton("Zapisz");
         this.buttons[1] = new JButton("Rozwiąż");
@@ -51,12 +62,9 @@ public class LabyrinthGUI extends JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        createMaze(400, 400);
-        
         this.drawPanel.addMouseMotionListener(this.mouse);
         this.drawPanel.addMouseListener(this.mouse);
-        
-        
+
         ActionListener timerAction = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 refresh();
@@ -68,14 +76,6 @@ public class LabyrinthGUI extends JFrame {
 
     }
 
-    public void createMaze(int width, int height) {
-        for (int i = 0; i < MAZE_SIZE; i++) {
-            for (int j = 0; j < MAZE_SIZE; j++) {
-                tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
-            }
-        }
-    }
-    
     private void refresh() {
         this.drawPanel.repaint();
     }
@@ -85,7 +85,8 @@ public class LabyrinthGUI extends JFrame {
     }
 
     public void ownMaze() {
-        int a = 2; /* test upa na gita */
+        int a = 2;
+        /* test upa na gita */
 
     }
 
