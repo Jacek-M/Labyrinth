@@ -3,12 +3,14 @@ package GUI;
 import Map.Tile;
 import Map.TileStatus;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class LabyrinthGUI extends JFrame {
 
@@ -24,6 +26,7 @@ public class LabyrinthGUI extends JFrame {
     private DrawablePanel drawPanel;
     private JButton[] buttons;
     private Tile[][] tiles;
+    private MouseHandler mouse;
 
     public LabyrinthGUI(ActionStatus action) {
         tiles = new Tile[MAZE_SIZE][MAZE_SIZE];
@@ -31,6 +34,7 @@ public class LabyrinthGUI extends JFrame {
         this.panel = new JPanel();
         this.drawPanel = new DrawablePanel(400, 400, tiles);
         this.buttons = new JButton[2];
+        this.mouse = new MouseHandler(tiles);
 
         this.buttons[0] = new JButton("Zapisz");
         this.buttons[1] = new JButton("Rozwiąż");
@@ -49,6 +53,20 @@ public class LabyrinthGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         createMaze(400, 400);
+        
+
+        this.addMouseListener(this.mouse);
+        this.addMouseMotionListener(this.mouse);
+        
+        
+        ActionListener timerAction = new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                refresh();
+            }
+        };
+        Timer timer = new Timer(10, timerAction);
+        timer.setRepeats(true);
+        timer.start();
 
     }
 
@@ -58,6 +76,10 @@ public class LabyrinthGUI extends JFrame {
                 tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
             }
         }
+    }
+    
+    private void refresh() {
+        this.drawPanel.repaint();
     }
 
     public void drawMaze(Graphics g, int width, int height) {
