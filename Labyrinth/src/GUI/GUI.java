@@ -58,10 +58,9 @@ public class GUI extends JFrame {
                 labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.LOAD_MAZE);
                 labiLabyrinthGUI.setVisible(true);
                 GUI.this.dispose();
+            }
         }
-    }
-
-);
+        );
 
     }
 }

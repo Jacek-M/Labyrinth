@@ -54,6 +54,16 @@ public class LabyrinthGUI extends JFrame {
         this.panel.add(buttons[0]);
         this.panel.add(buttons[1]);
 
+        this.buttons[0].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileDialog fd = new FileDialog(LabyrinthGUI.this, "Zapisz", FileDialog.SAVE);
+                fd.setVisible(true);
+                String dir = fd.getDirectory() + fd.getFile();
+                maze.saveMazeToFile(dir);
+            }
+        });
+
         this.add(drawPanel, BorderLayout.CENTER);
         this.add(panel, BorderLayout.PAGE_END);
 
