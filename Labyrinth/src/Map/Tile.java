@@ -1,12 +1,12 @@
 package Map;
 
-import Map.TileStatus;
 import java.awt.Point;
 
 public class Tile {
 
     private Point point;
     private TileStatus tileStatus;
+    private boolean visited = false;
 
     public Tile(Point point, TileStatus tileStatus) {
         this.point = point;
@@ -15,6 +15,14 @@ public class Tile {
 
     public Point getPoint() {
         return point;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 
     public TileStatus getTileStatus() {
@@ -28,6 +36,4 @@ public class Tile {
     public void setTileStatus(TileStatus tileStatus) {
         this.tileStatus = tileStatus;
     }
-    
-
 }

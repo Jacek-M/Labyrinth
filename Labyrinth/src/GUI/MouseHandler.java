@@ -23,6 +23,10 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
     public void setMouseStatus(boolean mouseStatus) {
         this.mouseStatus = mouseStatus;
     }
+    
+    public void setTiles(Tile[][] tiles) {
+        this.tiles = tiles;
+    }
 
     @Override
     public void mouseClicked(MouseEvent me) {

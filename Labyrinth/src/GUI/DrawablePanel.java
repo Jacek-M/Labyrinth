@@ -34,6 +34,14 @@ public class DrawablePanel extends JPanel {
         return super.getHeight();
     }
 
+    public Tile[][] getTiles() {
+        return this.tiles;
+    }
+
+    public void setTiles(Tile[][] tiles) {
+        this.tiles = tiles;
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;

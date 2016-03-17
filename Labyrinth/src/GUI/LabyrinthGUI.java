@@ -3,11 +3,11 @@ package GUI;
 import Map.Maze;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -17,7 +17,7 @@ public class LabyrinthGUI extends JFrame {
     public static final int WIDTH = 400;
     public static final int HEIGHT = 500;
 
-    public static final int TILE_SIZE = 5;
+    public static final int TILE_SIZE = 20;
     public static final int MAZE_SIZE = WIDTH / TILE_SIZE;
 
     private JPanel panel;
@@ -38,21 +38,29 @@ public class LabyrinthGUI extends JFrame {
             fd.setVisible(true);
             String dir = fd.getDirectory() + fd.getFile();
             maze = new Maze();
-            maze.loadMazeFromFile(dir);
+
+            if (dir != null && !dir.isEmpty() && dir.length() > 3) {
+                if (maze.loadMazeFromFile(dir) == false) {
+                    maze = new Maze(MAZE_SIZE);
+                    this.drawPanel.setTiles(maze.getTiles());
+                }
+            }
         }
 
         this.panel = new JPanel();
         this.drawPanel = new DrawablePanel(WIDTH, WIDTH, maze.getTiles());
-        this.buttons = new JButton[2];
+        this.buttons = new JButton[3];
         this.mouse = new MouseHandler(maze.getTiles());
 
         this.buttons[0] = new JButton("Zapisz");
         this.buttons[1] = new JButton("Rozwiąż");
+        this.buttons[2] = new JButton("Wyczyść");
 
         this.panel.setSize(400, 100);
 
         this.panel.add(buttons[0]);
         this.panel.add(buttons[1]);
+        this.panel.add(buttons[2]);
 
         this.buttons[0].addActionListener(new ActionListener() {
             @Override
@@ -60,7 +68,28 @@ public class LabyrinthGUI extends JFrame {
                 FileDialog fd = new FileDialog(LabyrinthGUI.this, "Zapisz", FileDialog.SAVE);
                 fd.setVisible(true);
                 String dir = fd.getDirectory() + fd.getFile();
-                maze.saveMazeToFile(dir);
+                if(fd.getFile() != null && !fd.getFile().isEmpty() && fd.getFile().length() > 3)
+                    maze.saveMazeToFile(dir);
+                else JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
+            }
+        });
+        
+        this.buttons[1].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                maze = new Maze(MAZE_SIZE);
+                maze.generateMaze(MAZE_SIZE);
+                drawPanel.setTiles(maze.getTiles());
+                mouse.setTiles(maze.getTiles());
+            }
+        });
+        
+        this.buttons[2].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                maze = new Maze(MAZE_SIZE);
+                drawPanel.setTiles(maze.getTiles());
+                mouse.setTiles(maze.getTiles());
             }
         });
 
@@ -88,23 +117,5 @@ public class LabyrinthGUI extends JFrame {
 
     private void refresh() {
         this.drawPanel.repaint();
-    }
-
-    public void drawMaze(Graphics g, int width, int height) {
-
-    }
-
-    public void ownMaze() {
-        int a = 2;
-        /* test upa na gita */
-
-    }
-
-    public void loadMaze() {
-        //wczytanie
-    }
-
-    public void genetareMaze() {
-        //algorytm
     }
 }
