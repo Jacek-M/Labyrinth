@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -131,7 +132,7 @@ public class Maze {
             fw.close();
             JOptionPane.showMessageDialog(null, "Zapisano do pliku");
             return true;
-        } catch (FileNotFoundException  e) {
+        } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Nie wybrano pliku...");
             return false;
         } catch (IOException ex) {
@@ -139,19 +140,113 @@ public class Maze {
             return false;
         }
     }
-    
+
     private Tile getTileOnPos(int x, int y) {
-        for(int i = 0; i < tiles.length; i++) {
-            for(int j = 0; j < tiles[i].length; j++) {
-                if(tiles[i][j].getPoint().x == x && tiles[i][j].getPoint().y == y)
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles[i].length; j++) {
+                if (tiles[i][j].getPoint().x == x && tiles[i][j].getPoint().y == y) {
                     return tiles[i][j];
+                }
             }
         }
         return null;
     }
-    
+
+    private ArrayList<Tile> getNeighbours(int x, int y) {
+        ArrayList<Tile> aTile = new ArrayList<>();
+
+        int[][] offsets
+                = {{-2, -2}, {0, -2}, {2, -2},
+                {-2, 0}, /*tile*/ {2, 0},
+                {2, -2}, {0, 2}, {2, 2}};
+
+        for (int i = 0; i < offsets.length; i++) {
+            Tile temp = getTileOnPos(x + offsets[i][0], y + offsets[i][1]);
+            if (temp != null && !temp.isVisited()) {
+                aTile.add(getTileOnPos(x + offsets[i][0], y + offsets[i][1]));
+            }
+        }
+        return aTile;
+    }
+
     public void generateMaze(int mazeSize) {
-       
+
+        for (int i = 0; i < mazeSize; i++) {
+            for (int j = 0; j < mazeSize; j++) {
+                if (i % 2 != 0 && j % 2 != 0) {
+                    tiles[i][j].setTileStatus(TileStatus.PATH);
+                } else {
+                    tiles[i][j].setTileStatus(TileStatus.WALL);
+                }
+                tiles[i][j].setVisited(false);
+            }
+        }
+
+        ArrayList<Tile> unvisitedTiles = Tools.arrayToList(tiles);
+        System.out.println("UnvisitedTiles Len = " + unvisitedTiles.size());
+        ArrayList<Tile> copyTiles = (ArrayList<Tile>) unvisitedTiles.clone();
+        Stack visited = new Stack();
+
+        Random r = null;
+        Tile currentTile = null;
+        do {
+            r = new Random();
+            currentTile = unvisitedTiles.get(r.nextInt(unvisitedTiles.size()));
+            System.out.println("LOOKING FOR PATH CELL BEFOR WHILE");
+        } while (currentTile.getTileStatus().equals(TileStatus.WALL));
+        
+        unvisitedTiles.remove(currentTile);
+        currentTile.setVisited(true);
+        currentTile.setTileStatus(TileStatus.PATH);
+        while (unvisitedTiles.size() > 0) {
+            int currx = currentTile.getPoint().x;
+            int curry = currentTile.getPoint().y;
+
+            ArrayList<Tile> neighbours = getNeighbours(currx, curry);
+            if (neighbours.size() > 0) {
+                Tile randomNTile = null;
+                do {
+                    r = new Random();
+                    randomNTile = neighbours.get(r.nextInt(neighbours.size()));
+                    System.out.println("LOOKING FOR PATH CELL INSIDE WHILE");
+                } while (randomNTile.getTileStatus().equals(TileStatus.WALL));
+                visited.push(currentTile);
+                
+                int ofsx = currentTile.getPoint().x - randomNTile.getPoint().x;
+                int ofsy = currentTile.getPoint().y - randomNTile.getPoint().y;
+                Tile tile = getTileOnPos(currentTile.getPoint().x + ofsx/2, currentTile.getPoint().y + ofsy/2);
+                if(tile != null){
+                    getTileOnPos(currentTile.getPoint().x + ofsx/2, currentTile.getPoint().y + ofsy/2).setTileStatus(TileStatus.PATH);
+                }
+                currentTile = randomNTile;
+                currentTile.setVisited(true);
+                unvisitedTiles.remove(currentTile);
+             
+                System.out.println("===>VISITING");
+            } else {
+                if (visited.size() > 0) {
+                    currentTile = (Tile) visited.pop();
+                    System.out.println("====>POPING");
+                } else {
+                    System.out.println("BLAD WYKONANIA");
+                }
+            }
+        }
+        System.out.println("END OF GENERATING");
+
+        int empty = 0, fill = 0;
+        for (int i = 0; i < mazeSize; i++) {
+            for (int j = 0; j < mazeSize; j++) {
+                if (tiles[i][j].getTileStatus().equals(TileStatus.PATH)) {
+                    empty++;
+                } else {
+                    fill++;
+                }
+
+            }
+        }
+
+        System.out.println("EMPTY === " + empty + " FILLED = " + fill);
     }
 
 }

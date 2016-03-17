@@ -19,7 +19,9 @@ public class Tools {
         ArrayList<Tile> tileList = new ArrayList<>();
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                tileList.add(tiles[i][j]);
+                if (tiles[i][j].getTileStatus().equals(TileStatus.PATH)) {
+                    tileList.add(tiles[i][j]);
+                }
             }
         }
         return tileList;
@@ -39,4 +41,3 @@ public class Tools {
         return tiles;
     }
 }
-

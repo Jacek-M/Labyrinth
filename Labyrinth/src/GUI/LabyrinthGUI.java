@@ -17,7 +17,7 @@ public class LabyrinthGUI extends JFrame {
     public static final int WIDTH = 400;
     public static final int HEIGHT = 500;
 
-    public static final int TILE_SIZE = 20;
+    public static final int TILE_SIZE = 5;
     public static final int MAZE_SIZE = WIDTH / TILE_SIZE;
 
     private JPanel panel;
@@ -68,12 +68,14 @@ public class LabyrinthGUI extends JFrame {
                 FileDialog fd = new FileDialog(LabyrinthGUI.this, "Zapisz", FileDialog.SAVE);
                 fd.setVisible(true);
                 String dir = fd.getDirectory() + fd.getFile();
-                if(fd.getFile() != null && !fd.getFile().isEmpty() && fd.getFile().length() > 3)
+                if (fd.getFile() != null && !fd.getFile().isEmpty() && fd.getFile().length() > 3) {
                     maze.saveMazeToFile(dir);
-                else JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
+                }
             }
         });
-        
+
         this.buttons[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,7 +85,7 @@ public class LabyrinthGUI extends JFrame {
                 mouse.setTiles(maze.getTiles());
             }
         });
-        
+
         this.buttons[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -116,6 +118,7 @@ public class LabyrinthGUI extends JFrame {
     }
 
     private void refresh() {
+        this.drawPanel.setTiles(maze.getTiles());
         this.drawPanel.repaint();
     }
 }
