@@ -156,9 +156,7 @@ public class Maze {
         ArrayList<Tile> aTile = new ArrayList<>();
 
         int[][] offsets
-                = {{-2, -2}, {0, -2}, {2, -2},
-                {-2, 0}, /*tile*/ {2, 0},
-                {2, -2}, {0, 2}, {2, 2}};
+                = {{0, -2}, {-2, 0}, /*tile*/ {2, 0}, {0, 2}};
 
         for (int i = 0; i < offsets.length; i++) {
             Tile temp = getTileOnPos(x + offsets[i][0], y + offsets[i][1]);
@@ -194,7 +192,7 @@ public class Maze {
             currentTile = unvisitedTiles.get(r.nextInt(unvisitedTiles.size()));
             System.out.println("LOOKING FOR PATH CELL BEFOR WHILE");
         } while (currentTile.getTileStatus().equals(TileStatus.WALL));
-        
+
         unvisitedTiles.remove(currentTile);
         currentTile.setVisited(true);
         currentTile.setTileStatus(TileStatus.PATH);
@@ -211,17 +209,18 @@ public class Maze {
                     System.out.println("LOOKING FOR PATH CELL INSIDE WHILE");
                 } while (randomNTile.getTileStatus().equals(TileStatus.WALL));
                 visited.push(currentTile);
-                
+
                 int ofsx = currentTile.getPoint().x - randomNTile.getPoint().x;
                 int ofsy = currentTile.getPoint().y - randomNTile.getPoint().y;
-                Tile tile = getTileOnPos(currentTile.getPoint().x + ofsx/2, currentTile.getPoint().y + ofsy/2);
-                if(tile != null){
-                    getTileOnPos(currentTile.getPoint().x + ofsx/2, currentTile.getPoint().y + ofsy/2).setTileStatus(TileStatus.PATH);
+                Tile tile = getTileOnPos(randomNTile.getPoint().x + (ofsx / 2), randomNTile.getPoint().y + (ofsy / 2));
+                if (tile != null) {
+                    tile.setTileStatus(TileStatus.PATH);
                 }
+
                 currentTile = randomNTile;
                 currentTile.setVisited(true);
                 unvisitedTiles.remove(currentTile);
-             
+
                 System.out.println("===>VISITING");
             } else {
                 if (visited.size() > 0) {
@@ -231,11 +230,19 @@ public class Maze {
                     System.out.println("BLAD WYKONANIA");
                 }
             }
+            try {
+                Thread.sleep(0);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Maze.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
         System.out.println("END OF GENERATING");
 
         int empty = 0, fill = 0;
-        for (int i = 0; i < mazeSize; i++) {
+        for (int i = 0;
+                i < mazeSize;
+                i++) {
             for (int j = 0; j < mazeSize; j++) {
                 if (tiles[i][j].getTileStatus().equals(TileStatus.PATH)) {
                     empty++;
@@ -246,7 +253,8 @@ public class Maze {
             }
         }
 
-        System.out.println("EMPTY === " + empty + " FILLED = " + fill);
+        System.out.println(
+                "EMPTY === " + empty + " FILLED = " + fill);
     }
 
 }

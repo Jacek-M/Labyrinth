@@ -47,7 +47,7 @@ public class DrawablePanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(Color.GRAY);
-        g2d.fillRect(0, 0, width, height);
+        g2d.fillRect(0, 0, width, height - TILE_SIZE);
 
         for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
@@ -61,7 +61,7 @@ public class DrawablePanel extends JPanel {
                     g2d.setColor(Color.RED);
                 }
 
-                g2d.fillRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE - 1, TILE_SIZE - 1);
+                g2d.fillRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE , TILE_SIZE );
             }
         }
     }

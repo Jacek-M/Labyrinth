@@ -18,7 +18,7 @@ public class LabyrinthGUI extends JFrame {
     public static final int HEIGHT = 500;
 
     public static final int TILE_SIZE = 5;
-    public static final int MAZE_SIZE = WIDTH / TILE_SIZE;
+    public static final int MAZE_SIZE = (WIDTH / TILE_SIZE) - 1;
 
     private JPanel panel;
     private DrawablePanel drawPanel;
@@ -80,9 +80,18 @@ public class LabyrinthGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 maze = new Maze(MAZE_SIZE);
-                maze.generateMaze(MAZE_SIZE);
-                drawPanel.setTiles(maze.getTiles());
-                mouse.setTiles(maze.getTiles());
+
+                Thread th = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        maze.generateMaze(MAZE_SIZE);
+                        drawPanel.setTiles(maze.getTiles());
+                        mouse.setTiles(maze.getTiles());
+                    }
+                });
+                
+                th.start();
             }
         });
 
