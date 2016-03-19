@@ -17,15 +17,14 @@ public class GUI extends JFrame {
 
     public GUI() {
         panel = new JPanel();
-        buttons = new JButton[3];
+        buttons = new JButton[2];
 
-        buttons[0] = new JButton("Generuj labirynt");
-        buttons[1] = new JButton("Rysuj labirynt");
-        buttons[2] = new JButton("Wczytaj labirynt");
+        buttons[0] = new JButton("Rysuj labirynt");
+        buttons[1] = new JButton("Wczytaj labirynt");
 
         panel.add(buttons[0]);
         panel.add(buttons[1]);
-        panel.add(buttons[2]);
+//        panel.add(buttons[2]);
 
         this.add(panel);
 
@@ -34,16 +33,16 @@ public class GUI extends JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.buttons[0].addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.GENERATE_MAZE);
-                labiLabyrinthGUI.setVisible(true);
-                GUI.this.dispose();
-            }
-        });
+//        this.buttons[0].addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.GENERATE_MAZE);
+//                labiLabyrinthGUI.setVisible(true);
+//                GUI.this.dispose();
+//            }
+//        });
 
-        this.buttons[1].addActionListener(new ActionListener() {
+        this.buttons[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.DRAW_MAZE);
@@ -52,7 +51,7 @@ public class GUI extends JFrame {
             }
         });
 
-        this.buttons[2].addActionListener(new ActionListener() {
+        this.buttons[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 labiLabyrinthGUI = new LabyrinthGUI(ActionStatus.LOAD_MAZE);

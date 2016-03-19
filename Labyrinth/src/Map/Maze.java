@@ -21,6 +21,8 @@ public class Maze {
     private Point endPoint;
     private Point startPoint;
 
+    private volatile boolean generationStatus = false;
+
     public Maze(Tile[][] tiles, Point endPoint, Point startPoint) {
         this.tiles = tiles;
         this.endPoint = endPoint;
@@ -38,6 +40,14 @@ public class Maze {
     }
 
     public Maze() {
+    }
+
+    public boolean isGenerationStatus() {
+        return generationStatus;
+    }
+
+    public void setGenerationStatus(boolean generationStatus) {
+        this.generationStatus = generationStatus;
     }
 
     public Tile[][] getTiles() {
@@ -167,8 +177,8 @@ public class Maze {
         return aTile;
     }
 
-    public void generateMaze(int mazeSize) {
-
+    public void generateMaze(int mazeSize, int mazeInterval) {
+        this.generationStatus = true;
         for (int i = 0; i < mazeSize; i++) {
             for (int j = 0; j < mazeSize; j++) {
                 if (i % 2 != 0 && j % 2 != 0) {
@@ -216,7 +226,6 @@ public class Maze {
                 if (tile != null) {
                     tile.setTileStatus(TileStatus.PATH);
                 }
-
                 currentTile = randomNTile;
                 currentTile.setVisited(true);
                 unvisitedTiles.remove(currentTile);
@@ -231,12 +240,12 @@ public class Maze {
                 }
             }
             try {
-                Thread.sleep(0);
+                Thread.sleep(mazeInterval);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Maze.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        this.generationStatus = false;
         System.out.println("END OF GENERATING");
 
         int empty = 0, fill = 0;
@@ -249,12 +258,8 @@ public class Maze {
                 } else {
                     fill++;
                 }
-
             }
         }
-
-        System.out.println(
-                "EMPTY === " + empty + " FILLED = " + fill);
+        System.out.println("EMPTY === " + empty + " FILLED = " + fill);
     }
-
 }

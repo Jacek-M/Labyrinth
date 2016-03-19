@@ -26,6 +26,14 @@ public class Tools {
         }
         return tileList;
     }
+    
+    public static Integer[] intToInteger(int[] vals) {
+        Integer[] ints = new Integer[vals.length];
+        for(int i = 0; i < vals.length; i++){
+            ints[i] = vals[i];
+        }
+        return ints;
+    }
 
     public static Tile[][] listToArray2d(ArrayList<Tile> list, int mazeSize) {
         Tile[][] tiles = new Tile[mazeSize][mazeSize];
