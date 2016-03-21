@@ -83,22 +83,22 @@ public class Maze {
 
             Scanner scanner = new Scanner(fr);
             size = scanner.nextInt();
-            this.tiles = new Tile[size][size];
+//            this.tiles = new Tile[size][size];
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
                     value = scanner.nextInt();
                     switch (value) {
                         case 0:
-                            tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
+                            this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
                             break;
                         case 1:
-                            tiles[i][j] = new Tile(new Point(i, j), TileStatus.WALL);
+                            this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.WALL);
                             break;
                         case 2:
-                            tiles[i][j] = new Tile(new Point(i, j), TileStatus.START);
+                            this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.START);
                             break;
                         case 3:
-                            tiles[i][j] = new Tile(new Point(i, j), TileStatus.EXIT);
+                            this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.EXIT);
                             break;
                     }
                 }
@@ -177,8 +177,7 @@ public class Maze {
         return aTile;
     }
 
-    public void generateMaze(int mazeSize, int mazeInterval) {
-        this.generationStatus = true;
+    private void createTemplate(int mazeSize) {
         for (int i = 0; i < mazeSize; i++) {
             for (int j = 0; j < mazeSize; j++) {
                 if (i % 2 != 0 && j % 2 != 0) {
@@ -189,10 +188,15 @@ public class Maze {
                 tiles[i][j].setVisited(false);
             }
         }
+    }
+
+    public void generateMaze(int mazeSize, int mazeInterval) {
+        this.generationStatus = true;
+        createTemplate(mazeSize);
 
         ArrayList<Tile> unvisitedTiles = Tools.arrayToList(tiles);
         System.out.println("UnvisitedTiles Len = " + unvisitedTiles.size());
-        ArrayList<Tile> copyTiles = (ArrayList<Tile>) unvisitedTiles.clone();
+        //ArrayList<Tile> copyTiles = (ArrayList<Tile>) unvisitedTiles.clone();
         Stack visited = new Stack();
 
         Random r = null;
@@ -205,7 +209,8 @@ public class Maze {
 
         unvisitedTiles.remove(currentTile);
         currentTile.setVisited(true);
-        currentTile.setTileStatus(TileStatus.PATH);
+        currentTile.setTileStatus(TileStatus.START);
+        this.startPoint = currentTile.getPoint();
         while (unvisitedTiles.size() > 0) {
             int currx = currentTile.getPoint().x;
             int curry = currentTile.getPoint().y;
@@ -231,13 +236,11 @@ public class Maze {
                 unvisitedTiles.remove(currentTile);
 
                 System.out.println("===>VISITING");
+            } else if (visited.size() > 0) {
+                currentTile = (Tile) visited.pop();
+                System.out.println("====>POPING");
             } else {
-                if (visited.size() > 0) {
-                    currentTile = (Tile) visited.pop();
-                    System.out.println("====>POPING");
-                } else {
-                    System.out.println("BLAD WYKONANIA");
-                }
+                System.out.println("BLAD WYKONANIA");
             }
             try {
                 Thread.sleep(mazeInterval);
@@ -261,5 +264,12 @@ public class Maze {
             }
         }
         System.out.println("EMPTY === " + empty + " FILLED = " + fill);
+    }
+
+    public boolean mazeReady() {
+        if (this.startPoint != null && this.endPoint != null) {
+            return true;
+        }
+        return false;
     }
 }

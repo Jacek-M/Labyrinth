@@ -1,20 +1,21 @@
 package GUI;
 
 import Map.Maze;
+import Map.TileStatus;
 import Misc.Tools;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerListModel;
-import javax.swing.SpinnerModel;
 import javax.swing.Timer;
 
 public class LabyrinthGUI extends JFrame {
@@ -33,22 +34,51 @@ public class LabyrinthGUI extends JFrame {
     private MouseHandler mouse;
     private JSpinner spinner;
     private Thread th = null;
+    private JRadioButton[] radio;
 
     public LabyrinthGUI(ActionStatus action) {
-
-        if (action.equals(ActionStatus.DRAW_MAZE)) {
-            maze = new Maze(MAZE_SIZE);
-        }
+        guiSettings();        
+        maze = new Maze(MAZE_SIZE);
 
         this.panel = new JPanel();
         this.drawPanel = new DrawablePanel(WIDTH, WIDTH, maze.getTiles());
         this.buttons = new JButton[5];
-        this.mouse = new MouseHandler(maze.getTiles());
-        FileDialog fd = new FileDialog(this, "Wczytaj", FileDialog.LOAD);
+        this.radio = new JRadioButton[4];
+        this.mouse = new MouseHandler(maze);
+        this.panel.setSize(WIDTH, 200);
 
-        SpinnerListModel model = new SpinnerListModel(Tools.intToInteger(new int[]{20, 15, 10, 5, 0}));
+        this.panel.setLayout(new GridLayout(2, 6));
+
+        radioButton();
+        createButtons();
+
+        this.add(drawPanel, BorderLayout.CENTER);
+        this.add(panel, BorderLayout.PAGE_END);
+
+        this.drawPanel.addMouseMotionListener(this.mouse);
+        this.drawPanel.addMouseListener(this.mouse);
+
+        ActionListener timerAction = new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                refresh();
+            }
+        };
+        Timer timer = new Timer(10, timerAction);
+        timer.setRepeats(true);
+        timer.start();
+
+    }
+
+    private void guiSettings() {
+        this.setTitle(TITLE);
+        this.setSize(WIDTH, HEIGHT);
+        this.setResizable(false);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    private void createButtons() {
+        SpinnerListModel model = new SpinnerListModel(Tools.intToInteger(new int[]{0, 5, 10, 15, 20}));
         this.spinner = new JSpinner(model);
-        this.spinner.setSize(410, 40);
 
         this.buttons[0] = new JButton("Zapisz");
         this.buttons[1] = new JButton("Rozwiąż");
@@ -56,14 +86,12 @@ public class LabyrinthGUI extends JFrame {
         this.buttons[3] = new JButton("Generuj");
         this.buttons[4] = new JButton("Wczytaj");
 
-        this.panel.setSize(WIDTH, 100);
-
         this.panel.add(spinner);
-        this.panel.add(buttons[3], BorderLayout.NORTH); // generuj
-        this.panel.add(buttons[0], BorderLayout.SOUTH); // zapisz
         this.panel.add(buttons[1]); // rozwiaz
-        this.panel.add(buttons[2], BorderLayout.SOUTH); // wyczysc
-        this.panel.add(buttons[4], BorderLayout.SOUTH); // wczytaj
+        this.panel.add(buttons[0]); // zapisz     
+        this.panel.add(buttons[4]); // wczytaj
+        this.panel.add(buttons[2]); // wyczysc
+        this.panel.add(buttons[3]); // generuj
 
         this.buttons[0].addActionListener(new ActionListener() {
             @Override
@@ -83,7 +111,14 @@ public class LabyrinthGUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                // implementacja algorytmu
+
+                if (maze.mazeReady()) {
+                    JOptionPane.showMessageDialog(null, "Szukanie drogi");
+                } // implementacja algorytmu
+                else {
+                    JOptionPane.showMessageDialog(null, "Błąd ustawienia punktu startu i końca");
+                }
+
             }
         });
 
@@ -92,7 +127,7 @@ public class LabyrinthGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 maze = new Maze(MAZE_SIZE);
                 drawPanel.setTiles(maze.getTiles());
-                mouse.setTiles(maze.getTiles());
+                mouse.setMaze(maze);
             }
         });
 
@@ -108,7 +143,7 @@ public class LabyrinthGUI extends JFrame {
                         buttons[3].setEnabled(false);
                         maze.generateMaze(MAZE_SIZE, (Integer) spinner.getValue());
                         drawPanel.setTiles(maze.getTiles());
-                        mouse.setTiles(maze.getTiles());
+                        mouse.setMaze(maze);
                     }
                 });
 
@@ -119,39 +154,65 @@ public class LabyrinthGUI extends JFrame {
         this.buttons[4].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                FileDialog fd = new FileDialog(LabyrinthGUI.this, "Wczytaj", FileDialog.LOAD);
                 fd.setVisible(true);
                 String dir = fd.getDirectory() + fd.getFile();
-                maze = new Maze();
-
+             
                 if (dir != null && !dir.isEmpty() && dir.length() > 3) {
                     if (maze.loadMazeFromFile(dir) == false) {
                         maze = new Maze(MAZE_SIZE);
                         drawPanel.setTiles(maze.getTiles());
+                        mouse.setMaze(maze);
                     }
                 }
             }
         });
+    }
 
-        this.add(drawPanel, BorderLayout.CENTER);
-        this.add(panel, BorderLayout.PAGE_END);
+    private void radioButton() {
+        
+       radio[0] = new JRadioButton("Path");
+        radio[1] = new JRadioButton("Wall");
+        radio[1].setSelected(true);
+        mouse.setCurrentTileStatus(TileStatus.WALL);
+        radio[2] = new JRadioButton("Start");
+        radio[3] = new JRadioButton("Exit");
 
-        this.setTitle(TITLE);
-        this.setSize(WIDTH, HEIGHT);
-        this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ButtonGroup group = new ButtonGroup();
+        group.add(radio[0]);
+        group.add(radio[1]);
+        group.add(radio[2]);
+        group.add(radio[3]);
 
-        this.drawPanel.addMouseMotionListener(this.mouse);
-        this.drawPanel.addMouseListener(this.mouse);
-
-        ActionListener timerAction = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                refresh();
+        radio[0].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mouse.setCurrentTileStatus(TileStatus.PATH);
             }
-        };
-        Timer timer = new Timer(10, timerAction);
-        timer.setRepeats(true);
-        timer.start();
+        });
+        radio[1].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mouse.setCurrentTileStatus(TileStatus.WALL);
+            }
+        });
+        radio[2].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mouse.setCurrentTileStatus(TileStatus.START);
+            }
+        });
+        radio[3].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mouse.setCurrentTileStatus(TileStatus.EXIT);
+            }
+        });
 
+        this.panel.add(radio[0]);
+        this.panel.add(radio[1]);
+        this.panel.add(radio[2]);
+        this.panel.add(radio[3]);
     }
 
     private void refresh() {
