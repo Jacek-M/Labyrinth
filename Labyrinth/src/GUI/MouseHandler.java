@@ -39,8 +39,10 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         if (me.getButton() == MouseEvent.BUTTON3) // right button
         {
             this.eraseMode = true;
+            this.mouseStatus = false;
         } else {
             this.mouseStatus = true;
+            this.eraseMode = false;
         }
     }
 
@@ -48,8 +50,10 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
     public void mousePressed(MouseEvent me) {
         if (me.getButton() == MouseEvent.BUTTON3) {
             this.eraseMode = true;
+            this.mouseStatus = false;
         } else {
             this.mouseStatus = true;
+            this.eraseMode = false;
         }
         setWall(me);
     }
@@ -84,27 +88,32 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
         int tiley = (int) ((me.getY()) / LabyrinthGUI.TILE_SIZE);
         if (tilex < LabyrinthGUI.MAZE_SIZE && tilex >= 0 && tiley < LabyrinthGUI.MAZE_SIZE && tiley >= 0) {
             if (this.eraseMode == true) {
+                isStartOrEnd(tilex, tiley);
                 this.maze.getTiles()[tilex][tiley].setTileStatus(TileStatus.PATH);
             } else {
-                if (currentTileStatus == TileStatus.START) {
-                    if (maze.getStartPoint() != null) {
-                        this.maze.getTiles()[this.maze.getStartPoint().x][this.maze.getStartPoint().y].setTileStatus(TileStatus.PATH);
-                    }
-
-                    this.maze.setStartPoint(new Point(tilex, tiley));
-                } else if (currentTileStatus == TileStatus.EXIT) {
-                    if (maze.getEndPoint() != null) {
-                        this.maze.getTiles()[this.maze.getEndPoint().x][this.maze.getEndPoint().y].setTileStatus(TileStatus.PATH);
-                    }
-                    this.maze.setEndPoint(new Point(tilex, tiley));
-                }
-                if (this.maze.getTiles()[tilex][tiley].getTileStatus() == TileStatus.START) {
-                    this.maze.setStartPoint(null);
-                } else if (this.maze.getTiles()[tilex][tiley].getTileStatus() == TileStatus.EXIT) {
-                    this.maze.setEndPoint(null);
-                }
+                isStartOrEnd(tilex, tiley);
                 this.maze.getTiles()[tilex][tiley].setTileStatus(currentTileStatus);
             }
+
+        }
+    }
+
+    private void isStartOrEnd(int x, int y) {
+        if (currentTileStatus == TileStatus.START && this.eraseMode == false) {
+            if (maze.getStartPoint() != null) {
+                this.maze.getTiles()[this.maze.getStartPoint().x][this.maze.getStartPoint().y].setTileStatus(TileStatus.PATH);
+            }
+            this.maze.setStartPoint(new Point(x, y));
+        } else if (currentTileStatus == TileStatus.EXIT && this.eraseMode == false) {
+            if (maze.getEndPoint() != null) {
+                this.maze.getTiles()[this.maze.getEndPoint().x][this.maze.getEndPoint().y].setTileStatus(TileStatus.PATH);
+            }
+            this.maze.setEndPoint(new Point(x, y));
+        }
+        if (this.maze.getTiles()[x][y].getTileStatus() == TileStatus.START) {
+            this.maze.setStartPoint(null);
+        } else if (this.maze.getTiles()[x][y].getTileStatus() == TileStatus.EXIT) {
+            this.maze.setEndPoint(null);
         }
     }
 

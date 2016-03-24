@@ -4,12 +4,12 @@ import Map.Maze;
 import Map.TileStatus;
 import Misc.Tools;
 import java.awt.BorderLayout;
-import java.awt.FileDialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,6 +17,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class LabyrinthGUI extends JFrame {
 
@@ -24,7 +25,7 @@ public class LabyrinthGUI extends JFrame {
     public static final int WIDTH = 500;
     public static final int HEIGHT = 600;
 
-    public static final int TILE_SIZE = 5;
+    public static final int TILE_SIZE = 10;
     public static final int MAZE_SIZE = (WIDTH / TILE_SIZE) - 1;
 
     private JPanel panel;
@@ -37,7 +38,7 @@ public class LabyrinthGUI extends JFrame {
     private JRadioButton[] radio;
 
     public LabyrinthGUI(ActionStatus action) {
-        guiSettings();        
+        guiSettings();
         maze = new Maze(MAZE_SIZE);
 
         this.panel = new JPanel();
@@ -96,11 +97,11 @@ public class LabyrinthGUI extends JFrame {
         this.buttons[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FileDialog fd = new FileDialog(LabyrinthGUI.this, "Zapisz", FileDialog.SAVE);
-                fd.setVisible(true);
-                String dir = fd.getDirectory() + fd.getFile();
-                if (fd.getFile() != null && !fd.getFile().isEmpty() && fd.getFile().length() > 3) {
-                    maze.saveMazeToFile(dir);
+                JFileChooser fd = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Pliki tekstowe", "txt");
+                fd.setFileFilter(filter);
+                if (fd.showSaveDialog(panel) == JFileChooser.APPROVE_OPTION) {
+                    maze.saveMazeToFile(fd.getSelectedFile().getAbsolutePath());
                 } else {
                     JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
                 }
@@ -154,24 +155,25 @@ public class LabyrinthGUI extends JFrame {
         this.buttons[4].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FileDialog fd = new FileDialog(LabyrinthGUI.this, "Wczytaj", FileDialog.LOAD);
-                fd.setVisible(true);
-                String dir = fd.getDirectory() + fd.getFile();
-             
-                if (dir != null && !dir.isEmpty() && dir.length() > 3) {
-                    if (maze.loadMazeFromFile(dir) == false) {
+                JFileChooser fd = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Pliki tekstowe", "txt");
+                fd.setFileFilter(filter);
+                if (fd.showOpenDialog(panel) == JFileChooser.APPROVE_OPTION) {
+                    if (maze.loadMazeFromFile(fd.getSelectedFile().getAbsolutePath()) == false) {
                         maze = new Maze(MAZE_SIZE);
                         drawPanel.setTiles(maze.getTiles());
                         mouse.setMaze(maze);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
                 }
             }
         });
     }
 
     private void radioButton() {
-        
-       radio[0] = new JRadioButton("Path");
+
+        radio[0] = new JRadioButton("Path");
         radio[1] = new JRadioButton("Wall");
         radio[1].setSelected(true);
         mouse.setCurrentTileStatus(TileStatus.WALL);
