@@ -1,6 +1,7 @@
 package GUI;
 
 import Map.Maze;
+import Map.Tile;
 import Map.TileStatus;
 import Misc.Tools;
 import java.awt.BorderLayout;
@@ -115,8 +116,10 @@ public class LabyrinthGUI extends JFrame {
 
                 if (maze.mazeReady()) {
                     JOptionPane.showMessageDialog(null, "Szukanie drogi");
-                } // implementacja algorytmu
-                else {
+                    maze.mazeSolver();
+                    drawPanel.setTiles(maze.getTiles());
+                    mouse.setMaze(maze);
+                } else {
                     JOptionPane.showMessageDialog(null, "Błąd ustawienia punktu startu i końca");
                 }
 

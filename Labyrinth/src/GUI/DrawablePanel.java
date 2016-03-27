@@ -59,9 +59,11 @@ public class DrawablePanel extends JPanel {
                     g2d.setColor(Color.BLUE);
                 } else if (tiles[i][j].getTileStatus() == TileStatus.EXIT) {
                     g2d.setColor(Color.RED);
+                } else if (tiles[i][j].getTileStatus() == TileStatus.RUN) {
+                    g2d.setColor(Color.PINK);
                 }
 
-                g2d.fillRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE , TILE_SIZE );
+                g2d.fillRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
     }

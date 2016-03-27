@@ -1,5 +1,7 @@
 package Map;
 
+import GUI.DrawablePanel;
+import static GUI.LabyrinthGUI.WIDTH;
 import Misc.Tools;
 import java.awt.Point;
 import java.io.BufferedReader;
@@ -9,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -79,17 +82,17 @@ public class Maze {
         int size;
         int value;
         try {
-            fr = new FileReader(path);          
+            fr = new FileReader(path);
             BufferedReader bufferedReader = new BufferedReader(fr);
             String line = bufferedReader.readLine();
             if (line == null || !(line.contains("#Labirynt"))) {
                 JOptionPane.showMessageDialog(null, "Plik nie zawiera labiryntu :(");
                 return false;
             }
-                size = Integer.parseInt(bufferedReader.readLine());
+            size = Integer.parseInt(bufferedReader.readLine());
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    value = bufferedReader.read();               
+                    value = bufferedReader.read();
                     switch (value) {
                         case 48:
                             this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
@@ -274,5 +277,84 @@ public class Maze {
             return true;
         }
         return false;
+    }
+
+    public void mazeSolver() {
+        Tile current;
+        int actualScore = Integer.MAX_VALUE;
+
+        ArrayList<Tile> open = new ArrayList<>();
+        ArrayList<Tile> closed = new ArrayList<>();
+        ArrayList<Tile> neighbours = new ArrayList<>();
+
+        open.add(this.tiles[startPoint.x][startPoint.y]);
+        //current = this.tiles[startPoint.x][startPoint.y];
+
+        while (1 == 1) {
+            if (open.size() == 0) {
+                JOptionPane.showMessageDialog(null, "Brak śćieżki ;/");
+                break;
+            }
+            current = open.get(0);
+            for (Tile tile : open) {
+                if (tile.getScore() < current.getScore()) {
+                    current = tile;
+                }
+            }
+
+            open.remove(current);
+            closed.add(current);
+
+            if (current.getTileStatus() == TileStatus.EXIT) {
+                System.out.println("Koniec");
+                markPath(current.getParent());
+                break;
+            }
+
+            neighbours = getNeighboursToSolver(current.getPoint().x, current.getPoint().y);
+            for (Tile tile : neighbours) {
+                if (tile.getTileStatus() == TileStatus.WALL || isInList(closed, tile)) {
+                    continue;
+                }
+
+                if (actualScore > tile.getScore() || !isInList(open, tile)) {
+                    tile.setParent(current);
+                    tile.setScore(tile.getParent().getScore() + 1);
+                    actualScore = tile.getScore();
+                    if (!isInList(open, tile)) {
+                        open.add(tile);
+                    }
+                }
+            }
+
+        }
+    }
+
+    public boolean isInList(ArrayList<Tile> list, Tile current) {
+        if (list.contains(current)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void markPath(Tile tile) {
+        while (tile.getParent() != null && tile.getTileStatus() != TileStatus.START) {
+            tile.setTileStatus(TileStatus.RUN);
+            tile = tile.getParent();
+        }
+    }
+
+    private ArrayList<Tile> getNeighboursToSolver(int x, int y) {
+        ArrayList<Tile> aTile = new ArrayList<>();
+
+        int[][] offsets
+                = {{0, -1}, {-1, 0}, /*tile*/ {1, 0}, {0, 1}};
+
+        for (int i = 0; i < offsets.length; i++) {
+            if (getTileOnPos(x + offsets[i][0], y + offsets[i][1]) != null) {
+                aTile.add(getTileOnPos(x + offsets[i][0], y + offsets[i][1]));
+            }
+        }
+        return aTile;
     }
 }

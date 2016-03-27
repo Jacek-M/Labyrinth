@@ -6,11 +6,35 @@ public class Tile {
 
     private Point point;
     private TileStatus tileStatus;
+    private int score = 0;
     private boolean visited = false;
+    private Tile parent;
+
+    public Tile getParent() {
+        return parent;
+    }
+
+    public void setParent(Tile parent) {
+        this.parent = parent;
+    }
 
     public Tile(Point point, TileStatus tileStatus) {
         this.point = point;
         this.tileStatus = tileStatus;
+    }
+
+    public Tile(Point point, TileStatus tileStatus, int score) {
+        this.point = point;
+        this.tileStatus = tileStatus;
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public Point getPoint() {
