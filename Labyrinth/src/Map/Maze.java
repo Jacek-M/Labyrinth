@@ -15,6 +15,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
+/**
+ * Klasa przechwująca dane o labiryncie
+ */
 public class Maze {
 
     private Tile[][] tiles;
@@ -76,6 +79,11 @@ public class Maze {
         this.startPoint = startPoint;
     }
 
+    /**
+     * Metoda wczytująca labirynt z podanego pliku
+     * @param path - ścieżka do pliku
+     * @return - czy operacjia się powiodła
+     */
     public boolean loadMazeFromFile(String path) {
         FileReader fr = null;
         int size;
@@ -120,9 +128,12 @@ public class Maze {
             return false;
         }
     }
-    
-    
 
+    /**
+     * Metoda zapisująca ścieżke wyjścia z labiryntu do pliku
+     * @param filePath - ścieżka do pliku
+     * @return - czy operacjia się powiodła
+     */
     public boolean exportPath(String filePath) {
         FileWriter fileWriter = null;
         if(this.pathCoords == null || this.pathCoords.size() <= 0) {
@@ -145,6 +156,11 @@ public class Maze {
         return true;
     }
 
+    /**
+     * Metoda zapisująca aktualny stan labiryntu do pliku
+     * @param path - ścieżka do pliku
+     * @return - czy operacjia się powiodła
+     */
     public boolean saveMazeToFile(String path) {
         FileWriter fw = null;
         try {
@@ -188,6 +204,11 @@ public class Maze {
         }
     }
 
+    /**
+     * Metoda zwracająca komórke z podanej pozycji
+     * @param x - wartość x
+     * @param y - wartość y
+     */
     private Tile getTileOnPos(int x, int y) {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
@@ -199,6 +220,11 @@ public class Maze {
         return null;
     }
 
+    /**
+     * Metoda zwracająca sąsiadów podanej komórki
+     * @param x - wartość x
+     * @param y - wartość y
+     */
     private ArrayList<Tile> getNeighbours(int x, int y) {
         ArrayList<Tile> aTile = new ArrayList<>();
 
@@ -214,6 +240,10 @@ public class Maze {
         return aTile;
     }
 
+    /**
+     * Metoda tworząca siatke potrzebną do wygenerowania labiryntu
+     * @param mazeSize - wielkość labiryntu
+     */
     private void createTemplate(int mazeSize) {
         for (int i = 0; i < mazeSize; i++) {
             for (int j = 0; j < mazeSize; j++) {

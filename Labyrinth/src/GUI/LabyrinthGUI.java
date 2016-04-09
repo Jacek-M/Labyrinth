@@ -11,6 +11,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -19,6 +20,9 @@ import javax.swing.SpinnerListModel;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * Klasa zawierająca graficzny interfejs programu
+ */
 public class LabyrinthGUI extends JFrame {
 
     public static final String TITLE = "MazeForm";
@@ -28,16 +32,16 @@ public class LabyrinthGUI extends JFrame {
     public static final int TILE_SIZE = 10;
     public static final int MAZE_SIZE = (WIDTH / TILE_SIZE) - 1;
 
-    private JPanel panel;
-    private DrawablePanel drawPanel;
-    private JButton[] buttons;
+    private final JPanel panel;
+    private final DrawablePanel drawPanel;
+    private final JButton[] buttons;
     private Maze maze;
-    private MouseHandler mouse;
+    private final MouseHandler mouse;
     private JSpinner spinner;
     private Thread th = null;
-    private JRadioButton[] radio;
+    private final JRadioButton[] radio;
 
-    public LabyrinthGUI(ActionStatus action) {
+    public LabyrinthGUI() {
         guiSettings();
         maze = new Maze(MAZE_SIZE);
 
@@ -70,6 +74,9 @@ public class LabyrinthGUI extends JFrame {
 
     }
 
+    /**
+     * głowne ustawienia okna
+     */
     private void guiSettings() {
         this.setTitle(TITLE);
         this.setSize(WIDTH, HEIGHT);
@@ -77,27 +84,28 @@ public class LabyrinthGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    /**
+     * utworzenie przycisków i spinera
+     */
     private void createButtons() {
         SpinnerListModel model = new SpinnerListModel(Tools.intToInteger(new int[]{0, 5, 10, 15, 20}));
         this.spinner = new JSpinner(model);
 
         this.buttons[0] = new JButton("Zapisz");
         this.buttons[1] = new JButton("Rozwiąż");
-        this.buttons[2] = new JButton("Wyczyść");
+        this.buttons[2] = new JButton("Wyczysc");
         this.buttons[3] = new JButton("Generuj");
         this.buttons[4] = new JButton("Wczytaj");
-        this.buttons[5] = new JButton("Zapisz ścieżke");
+        this.buttons[5] = new JButton("Ścieżka");
 
-        
         this.panel.add(spinner);
         this.panel.add(buttons[1]); // rozwiaz
         this.panel.add(buttons[0]); // zapisz     
         this.panel.add(buttons[4]); // wczytaj
+        this.panel.add(buttons[5]); // export
         this.panel.add(buttons[2]); // wyczysc
         this.panel.add(buttons[3]); // generuj
-        this.panel.add(buttons[5]); // export
-
-
+        
         this.buttons[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,7 +196,11 @@ public class LabyrinthGUI extends JFrame {
         });
     }
 
+    /**
+     * utworzenie menu do wybrania metody rysującej
+     */
     private void radioButton() {
+        this.panel.add(new JLabel());
 
         radio[0] = new JRadioButton("Path");
         radio[1] = new JRadioButton("Wall");
@@ -234,6 +246,9 @@ public class LabyrinthGUI extends JFrame {
         this.panel.add(radio[3]);
     }
 
+    /**
+     * odświerzenie panelu z labiryntem
+     */
     private void refresh() {
         this.drawPanel.setTiles(maze.getTiles());
 

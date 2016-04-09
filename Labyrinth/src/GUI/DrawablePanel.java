@@ -9,6 +9,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
+/**
+ * Klasa odpowiadająca za rysowanie aktualnego stanu labiryntu
+ * Metoda paintComponent jest wywoływana co 10ms
+ */
 public class DrawablePanel extends JPanel {
 
     private int width;
@@ -42,6 +46,9 @@ public class DrawablePanel extends JPanel {
         this.tiles = tiles;
     }
 
+    /**
+     * metoda rysująca aktualny stan labiryntu na panelu
+     */
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
