@@ -1,7 +1,6 @@
 package GUI;
 
 import Map.Maze;
-import Map.Tile;
 import Map.TileStatus;
 import Misc.Tools;
 import java.awt.BorderLayout;
@@ -44,7 +43,7 @@ public class LabyrinthGUI extends JFrame {
 
         this.panel = new JPanel();
         this.drawPanel = new DrawablePanel(WIDTH, WIDTH, maze.getTiles());
-        this.buttons = new JButton[5];
+        this.buttons = new JButton[6];
         this.radio = new JRadioButton[4];
         this.mouse = new MouseHandler(maze);
         this.panel.setSize(WIDTH, 200);
@@ -87,13 +86,17 @@ public class LabyrinthGUI extends JFrame {
         this.buttons[2] = new JButton("Wyczyść");
         this.buttons[3] = new JButton("Generuj");
         this.buttons[4] = new JButton("Wczytaj");
+        this.buttons[5] = new JButton("Zapisz ścieżke");
 
+        
         this.panel.add(spinner);
         this.panel.add(buttons[1]); // rozwiaz
         this.panel.add(buttons[0]); // zapisz     
         this.panel.add(buttons[4]); // wczytaj
         this.panel.add(buttons[2]); // wyczysc
         this.panel.add(buttons[3]); // generuj
+        this.panel.add(buttons[5]); // export
+
 
         this.buttons[0].addActionListener(new ActionListener() {
             @Override
@@ -110,19 +113,16 @@ public class LabyrinthGUI extends JFrame {
         });
 
         this.buttons[1].addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent ae) {
 
                 if (maze.mazeReady()) {
-                    JOptionPane.showMessageDialog(null, "Szukanie drogi");
                     maze.mazeSolver();
                     drawPanel.setTiles(maze.getTiles());
                     mouse.setMaze(maze);
                 } else {
                     JOptionPane.showMessageDialog(null, "Błąd ustawienia punktu startu i końca");
                 }
-
             }
         });
 
@@ -167,6 +167,20 @@ public class LabyrinthGUI extends JFrame {
                         drawPanel.setTiles(maze.getTiles());
                         mouse.setMaze(maze);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
+                }
+            }
+        });
+
+        this.buttons[5].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JFileChooser fd = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Pliki tekstowe", "txt");
+                fd.setFileFilter(filter);
+                if (fd.showSaveDialog(panel) == JFileChooser.APPROVE_OPTION) {
+                    maze.exportPath(fd.getSelectedFile().getAbsolutePath());
                 } else {
                     JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
                 }

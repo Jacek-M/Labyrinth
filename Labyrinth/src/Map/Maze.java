@@ -1,7 +1,5 @@
 package Map;
 
-import GUI.DrawablePanel;
-import static GUI.LabyrinthGUI.WIDTH;
 import Misc.Tools;
 import java.awt.Point;
 import java.io.BufferedReader;
@@ -11,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -23,6 +20,7 @@ public class Maze {
     private Tile[][] tiles;
     private Point endPoint;
     private Point startPoint;
+    private ArrayList<Point> pathCoords;
 
     private volatile boolean generationStatus = false;
 
@@ -30,11 +28,12 @@ public class Maze {
         this.tiles = tiles;
         this.endPoint = endPoint;
         this.startPoint = startPoint;
+        this.pathCoords = new ArrayList<>();
     }
 
     public Maze(int size) {
-        tiles = new Tile[size][size];
-
+        this.tiles = new Tile[size][size];
+        this.pathCoords = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
@@ -102,10 +101,14 @@ public class Maze {
                             break;
                         case 50:
                             this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.START);
+                            this.startPoint = this.tiles[i][j].getPoint();
                             break;
                         case 51:
                             this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.EXIT);
+                            this.endPoint = this.tiles[i][j].getPoint();
                             break;
+                        default:
+                            this.tiles[i][j] = new Tile(new Point(i, j), TileStatus.PATH);
                     }
                 }
             }
@@ -116,6 +119,30 @@ public class Maze {
             JOptionPane.showMessageDialog(null, "Nie wybrano pliku");
             return false;
         }
+    }
+    
+    
+
+    public boolean exportPath(String filePath) {
+        FileWriter fileWriter = null;
+        if(this.pathCoords == null || this.pathCoords.size() <= 0) {
+            return false;
+        }
+        try {
+            fileWriter = new FileWriter(filePath);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.println("#Path");
+            
+            for(Point p : pathCoords) {
+                printWriter.println(p.x + " " + p.y );
+            }
+
+            fileWriter.close();
+            printWriter.close();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Nie mozna zapisać do pliku");
+        }
+        return true;
     }
 
     public boolean saveMazeToFile(String path) {
@@ -141,6 +168,9 @@ public class Maze {
                             break;
                         case "EXIT":
                             printW.print(3);
+                            break;
+                        default:
+                            printW.print(0);
                             break;
                     }
                 }
@@ -202,7 +232,6 @@ public class Maze {
         createTemplate(mazeSize);
 
         ArrayList<Tile> unvisitedTiles = Tools.arrayToList(tiles);
-        //System.out.println("UnvisitedTiles Len = " + unvisitedTiles.size());
         Stack visited = new Stack();
 
         Random r = null;
@@ -210,7 +239,6 @@ public class Maze {
         do {
             r = new Random();
             currentTile = unvisitedTiles.get(r.nextInt(unvisitedTiles.size()));
-            //System.out.println("LOOKING FOR PATH CELL BEFOR WHILE");
         } while (currentTile.getTileStatus().equals(TileStatus.WALL));
 
         unvisitedTiles.remove(currentTile);
@@ -227,7 +255,6 @@ public class Maze {
                 do {
                     r = new Random();
                     randomNTile = neighbours.get(r.nextInt(neighbours.size()));
-                    //System.out.println("LOOKING FOR PATH CELL INSIDE WHILE");
                 } while (randomNTile.getTileStatus().equals(TileStatus.WALL));
                 visited.push(currentTile);
 
@@ -241,10 +268,8 @@ public class Maze {
                 currentTile.setVisited(true);
                 unvisitedTiles.remove(currentTile);
 
-                //System.out.println("===>VISITING");
             } else if (visited.size() > 0) {
                 currentTile = (Tile) visited.pop();
-                //System.out.println("====>POPING");
             } else {
                 System.out.println("BLAD WYKONANIA");
             }
@@ -255,21 +280,6 @@ public class Maze {
             }
         }
         this.generationStatus = false;
-        //System.out.println("END OF GENERATING");
-
-        int empty = 0, fill = 0;
-        for (int i = 0;
-                i < mazeSize;
-                i++) {
-            for (int j = 0; j < mazeSize; j++) {
-                if (tiles[i][j].getTileStatus().equals(TileStatus.PATH)) {
-                    empty++;
-                } else {
-                    fill++;
-                }
-            }
-        }
-        //System.out.println("EMPTY === " + empty + " FILLED = " + fill);
     }
 
     public boolean mazeReady() {
@@ -288,7 +298,6 @@ public class Maze {
         ArrayList<Tile> neighbours = new ArrayList<>();
 
         open.add(this.tiles[startPoint.x][startPoint.y]);
-        //current = this.tiles[startPoint.x][startPoint.y];
 
         while (1 == 1) {
             if (open.size() == 0) {
@@ -340,6 +349,7 @@ public class Maze {
     private void markPath(Tile tile) {
         while (tile.getParent() != null && tile.getTileStatus() != TileStatus.START) {
             tile.setTileStatus(TileStatus.RUN);
+            this.pathCoords.add(tile.getPoint());
             tile = tile.getParent();
         }
     }
